@@ -18,3 +18,19 @@ class Question {
     }
 }
 
+class VotingGuide {
+    constructor() {
+        this.questions = [];
+        this.currentQuestionIndex = 0;
+    }
+
+    addQuestion(question) {
+        this.questions.push(question);
+    }
+
+    showCurrentQuestion() {
+        const currentQuestion = this.questions[this.currentQuestionIndex];
+        document.getElementById("questions").innerHTML = currentQuestion.generateHTML();
+    }
+}
+
