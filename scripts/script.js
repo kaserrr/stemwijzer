@@ -1,16 +1,12 @@
-//question list
-let questionData = [
-    { id: 1, text: "Moet er meer geld worden besteed aan onderwijs?" },
-    { id: 2, text: "Moet de inkomstenbelasting worden verhoogd?" },
-    { id: 3, text: "Moet de maximale snelheid omhoog?" },
-    { id: 4, text: "Moet Nederland meer vluchtelingen opnemen?" }
-];
-
 //
+
+let answers = [];
+
 class Question {
-    constructor(id, text, answer, weight) {
+    constructor(id, title, statement, answer, weight) {
         this.id = id;
-        this.text = text;
+        this.title = title;
+        this.statement = statement;
         this.answer = answer;
         this.weight = weight;
         this.skipped = false;
@@ -30,10 +26,11 @@ class Question {
     generateQuestionHTML() {
         return `
             <div>
-                <p>${this.text}</p>
-                <button onclick="answerQuestion('agree')">Eens</button>
+                <p>${this.title}</p>
+                <p>${this.statement}</p>
+                <button onclick="answerQuestion('pro')">Eens</button>
                 <button onclick="answerQuestion('none')">Geen van beide</button>
-                <button onclick="answerQuestion('disagree')">Oneens</button>
+                <button onclick="answerQuestion('contra')">Oneens</button>
                  <a href="#" onclick="skipCurrentQuestion()">Sla deze vraag over</a>
             </div>
         `;
@@ -42,7 +39,7 @@ class Question {
     generateWeightHTML() {
         return `
             <div>
-                <p>${this.text}</p>
+                <p>${this.statement}</p>
                 <input type="checkbox" id="weight_${this.id}" name="question_weight" value="1">
             </div>
         `;
@@ -84,8 +81,8 @@ class VotingGuide {
 let votingGuide = new VotingGuide();
 
 //makes a Question instance for every item in questionData
-questionData.forEach(question => {
-    votingGuide.addQuestion(new Question(question.id, question.text,));
+subjects.forEach(question => {
+    votingGuide.addQuestion(new Question(question.id, question.title, question.statement));
 });
 
 //starts the voting guide by showing the questions-container and hiding the start-container
@@ -99,20 +96,28 @@ function startVotingGuide() {
 function answerQuestion(choice) {
     votingGuide.questions[votingGuide.currentQuestionIndex].answered(choice);
     votingGuide.nextQuestion();
+    answers.push({id: votingGuide.currentQuestionIndex-1,choice: choice });
+    console.log(answers);   
 }
 
 //checks which question your on and puts you back 1 question when clicked
 function backToLastQuestion() {
-    if(votingGuide.currentQuestionIndex > 0) {
+    if (votingGuide.currentQuestionIndex > 0) {
         votingGuide.currentQuestionIndex--;
         votingGuide.showCurrentQuestion();
+    } else if (votingGuide.currentQuestionIndex == answers[votingGuide.currentQuestionIndex["id"]]) {
+        alert("test");
     }
+    console.log(votingGuide.currentQuestionIndex);
+    console.log(answers[votingGuide.currentQuestionIndex["id"]]);
 }
 
 //checks which question your on and puts you forward 1 question when clicked
 function skipCurrentQuestion() {
     votingGuide.questions[votingGuide.currentQuestionIndex].skipQuestion();
     votingGuide.nextQuestion();
+    answers.push({ id: votingGuide.currentQuestionIndex, choice: "skipped" });
+    console.log(answers);
 }
 
 //generated each question with a checkbox to select the weight per question
